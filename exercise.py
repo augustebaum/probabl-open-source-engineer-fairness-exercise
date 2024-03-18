@@ -9,7 +9,7 @@ import typing
 
 seed = 42
 
-# Get moons data and split it into a training set and a test set
+# Get moons data and split it into a training set and a test set: we will train our classifier on the train set only, and evaluate it on the test set to see if the model is able to generalize to unseen data
 
 dataset = sklearn.datasets.make_moons(n_samples=200, noise=0.2, random_state=seed)
 
@@ -26,12 +26,13 @@ classifier = sklearn.ensemble.HistGradientBoostingClassifier(random_state=seed)
 
 classifier.fit(X["train"], y["train"])
 
-# Evaluate our classifier
+# Evaluate our classifier on the train and test data
 
 print(f"Train set score: {classifier.score(X['train'], y['train'])}")
 print(f"Test set score: {classifier.score(X['test'], y['test'])}")
 
-def plot_decision_boundary(data: typing.Literal["train", "test"]) -> None:
+def plot_decision_boundary(classifier, X, y, data: typing.Literal["train", "test"]) -> None:
+    """Plot the data on the x-y plane along with the decision boundaries given by a classifier."""
     disp = sklearn.inspection.DecisionBoundaryDisplay.from_estimator(
         classifier,
         X[data],
@@ -42,6 +43,10 @@ def plot_decision_boundary(data: typing.Literal["train", "test"]) -> None:
     disp.ax_.scatter(X[data][:, 0], X[data][:, 1], c=y[data], edgecolor="k")
     plt.savefig(f"decision_boundary_{data}.svg")
 
-plot_decision_boundary("train")
+def _plot_decision_boundary(data):
+    """Pre-apply arguments to the plotting function."""
+    return plot_decision_boundary(classifier, X, y, data)
 
-plot_decision_boundary("test")
+_plot_decision_boundary("train")
+
+_plot_decision_boundary("test")
